@@ -12,8 +12,8 @@
 
 #include "Gamma/Gamma.h"
 
-#include "allocore/io/al_AudioIO.hpp"
-#include "allocore/ui/al_SynthSequencer.hpp"
+#include "al/core/io/al_AudioIO.hpp"
+#include "al/util/ui/al_SynthSequencer.hpp"
 
 using namespace gam;
 using namespace al;
@@ -109,7 +109,8 @@ int main(){
     PluckedString &thirdPluck = s.add<PluckedString>( 6.5).set(6.5, 329,  0.7, .0001, -1, 1, .5);
 //    s.add(Func(thirdPluck, &PluckedString::freq, 440)).dt(8);
 
-    AudioIO io(256, 44100., s.audioCB, &s);
+    AudioIO io;
+    io.init(s.audioCB, &s,256, 44100.);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

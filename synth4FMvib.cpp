@@ -11,8 +11,8 @@
 
 #include "Gamma/Gamma.h"
 
-#include "allocore/io/al_AudioIO.hpp"
-#include "allocore/ui/al_SynthSequencer.hpp"
+#include "al/core/io/al_AudioIO.hpp"
+#include "al/util/ui/al_SynthSequencer.hpp"
 
 using namespace gam;
 using namespace al;
@@ -78,6 +78,7 @@ public:
     //
     virtual void onProcess(AudioIOData& io) override {
 
+        float modFreq = mCarFrq * mModMul;
         while(io()){
             mVib.freq(mVibEnv());
             car.freq((mCarFrq + mVib()*mVibDepth*mCarFrq) *mCarMul + mod()*mModEnv()*modFreq);
@@ -133,7 +134,7 @@ protected:
 
 int main(){
 
-    Scheduler s;
+    SynthSequencer s;
     s.add<FM>( 0).set( 5, 262, 0.5, 0.1,0.1, 0.75, 0.01,7,5, 1,1.0007,3.5, 7.5, 0.5, 0.0075, 0);
     s.add<FM>( 5).freq(220);
     s.add<FM>(10).set( 5, 262, 0.5, 0.1,0.1, 0.75, 0.01,4,4, 3,2.0007,3.5, 5.8, 0.5, 0.0075,0);
@@ -143,7 +144,8 @@ int main(){
     s.add<FM>(30).set(0.3,100, 0.5, 0.001,0.25, 0.8, 5,5,5, 1, 1.48, 3.5, 7.5, 0.5, 0.0075, 0);
 
 
-    AudioIO io(256, 44100., Scheduler::audioCB, &s);
+    AudioIO io;
+    io.init(s.audioCB, &s, 256, 44100.);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

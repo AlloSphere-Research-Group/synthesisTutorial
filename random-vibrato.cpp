@@ -7,16 +7,20 @@
 
 #include <cstdio>               // for printing to stdout
 #define GAMMA_H_INC_ALL         // define this to include all header files
+#define GAMMA_H_NO_IO           // define this to avoid bringing AudioIO from Gamma
+
 #include "Gamma/Gamma.h"
 
+#include "al/core/io/al_AudioIO.hpp"
+#include "al/util/ui/al_SynthSequencer.hpp"
+
 using namespace gam;
+using namespace al;
 
-
-class SineEnv : public Process<AudioIOData> {
+class SineEnv : public SynthVoice {
 public:
 
     SineEnv(double dt=0)
-    :    Process(dt)
     {
         set (6.5, 60, 0.3, 1, 2);
         mAmpEnv.curve(0); // make segments lines
@@ -51,9 +55,6 @@ public:
     //
     void onProcess(AudioIOData& io){
 
-        mAmpEnv.totalLength(mDur, 1);
-        mSeg.freq(mNoiseRate);
-
         while(io()){
         mOsc.freq(mOscFrq + mSeg(mNoise)*mNoiseDepth*mOscFrq);
       //mOsc.freq(mOscFrq * (1.0 + (mNoiseDepth * mSeg(mNoise))));
@@ -68,6 +69,11 @@ public:
         if(mAmpEnv.done() && (mEnvFollow.value() < 0.001)) free();
     }
 
+    virtual void onTriggerOn() {
+        mAmpEnv.totalLength(mDur, 1);
+        mSeg.freq(mNoiseRate);
+        mAmpEnv.reset();
+    }
 
 protected:
     float mAmp;
@@ -87,7 +93,7 @@ protected:
 
 int main(){
 
-    Scheduler s;
+    SynthSequencer s;
     //s.add<SineEnv>( 0).set(2.5,  60, 0.3, .1, .2);
     s.add<SineEnv>( 0  ).set(10.0, 220, 0.3, .011, .2);
     //s.add<SineEnv>( 0  ).set(3.5, 510, 0.3, .011, .2);
@@ -96,7 +102,8 @@ int main(){
     //s.add<SineEnv>( 3.5).set(7.5, 710, 0.3, 1, 2);
     //s.add<SineEnv>( 6.5).set(1.5,  60, 0.3, 1, 2);
 
-    AudioIO io(256, 44100., Scheduler::audioCB, &s);
+    AudioIO io;
+    io.init(s.audioCB, &s,256, 44100.);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

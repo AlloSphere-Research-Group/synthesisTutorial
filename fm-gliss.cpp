@@ -11,8 +11,8 @@
 
 #include "Gamma/Gamma.h"
 
-#include "allocore/io/al_AudioIO.hpp"
-#include "allocore/ui/al_SynthSequencer.hpp"
+#include "al/core/io/al_AudioIO.hpp"
+#include "al/util/ui/al_SynthSequencer.hpp"
 
 using namespace gam;
 using namespace al;
@@ -149,7 +149,8 @@ int main(){
     s.add<FM>(20).set(10, 100, 300, 1.0, 0.5, 0.001,9.90, 0.8, 7.0, 7.0, 7.0, 1, 1.4, 0);//gong
     s.add<FM>(30).set(0.3,100, 500, 0.0, 0.5, 0.001,0.25, 0.8, 5,5,5, 1, 1.48, 0);//drum
 
-    AudioIO io(256, 44100., s.audioCB, &s);
+    AudioIO io;
+    io.init(s.audioCB, &s,256, 44100.);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();
