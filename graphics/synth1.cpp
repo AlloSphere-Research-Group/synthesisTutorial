@@ -126,6 +126,7 @@ int main(){
 
     SynthSequencer &s = app.s; // For convenience, get a reference to the app's sequencer
 
+    s.setTempo(60);
     // Now we sequence stuff. This is the C++ "note list"
     //s.add( 0).set(2.5,  60, 0.3, .1, .2);
     s.add<SineEnv>( 0  ).set(3.5, 260, 0.3, .011, .2);
