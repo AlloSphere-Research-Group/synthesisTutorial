@@ -151,7 +151,7 @@ int main(){
     s.add<DBMFM>(50.1).set( 20, 30, 0.5, 0.1, 10.3, 0.8,  0.01, 7.0, 5.0, 1.1, 4.0, 4.0, 1.0, 1.007, 3.001, 0);
 
     AudioIO io;
-    io.init (s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

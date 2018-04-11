@@ -133,7 +133,7 @@ int main(){
 
 
     AudioIO io;
-    io.init(s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

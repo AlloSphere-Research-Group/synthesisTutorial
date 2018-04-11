@@ -150,7 +150,7 @@ int main(){
     s.add<FM>(30).set(0.3,100, 500, 0.0, 0.5, 0.001,0.25, 0.8, 5,5,5, 1, 1.48, 0);//drum
 
     AudioIO io;
-    io.init(s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

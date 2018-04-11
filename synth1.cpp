@@ -161,7 +161,7 @@ int main(){
     s.add<SineEnv>( 60.0).set(3.5, 230, 0.3, 1, 2);
 
     AudioIO io;
-    io.init(s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

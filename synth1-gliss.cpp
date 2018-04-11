@@ -132,7 +132,7 @@ int main(){
     //s.add<Gliss>( 10).Gliss1(110).Gliss2(440).table(tbSqr);
 
     AudioIO io;
-    io.init(s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();

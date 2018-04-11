@@ -113,7 +113,7 @@ int main(){
     s.add<OscTrm>(50).set(10, 262, 0.5, 0.1,2,0.8, 0.8,4,8,0.5, tbSin, 0.8);
 
     AudioIO io;
-    io.init(s.audioCB, &s,256, 44100.);
+    io.initWithDefaults(s.audioCB, &s, true, false);
     Domain::master().spu(io.framesPerSecond());
     io.start();
     printf("\nPress 'enter' to quit...\n"); getchar();
