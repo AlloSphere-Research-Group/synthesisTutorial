@@ -26,18 +26,11 @@ using namespace al;
 class SineEnv : public SynthVoice {
 public:
 
-    // Voice parameters
-    Parameter amplitude {"amplitude", "", 0.3, "", 0.0, 1.0};
-    Parameter frequency {"frequency", "", 60, "", 20, 1000};
-    Parameter attackTime {"attackTime", "", 1.0, "", 0.01, 3.0};
-    Parameter releaseTime {"releaseTime", "", 3.0, "", 0.1, 10.0};
-    Parameter pan {"pan", "", 0.0, "", -1.0, 1.0};
-
     // Unit generators
     gam::Pan<> mPan;
     gam::Sine<> mOsc;
     gam::Env<3> mAmpEnv;
-    gam::EnvFollow<> mEnvFollow;
+    gam::EnvFollow<> mEnvFollow;  // envelope follower to connect audio output to graphics
 
     // Additional members
     Mesh mMesh;
@@ -53,26 +46,22 @@ public:
         // We have the mesh be a sphere
         addDisc(mMesh, 1.0, 30);
 
-        // Register the parameters with the SynthVoice.
-        // These are the parameters that will be shown in the GUIs
-        // And the parameters that will be stored in sequences
-        registerTriggerParameters(amplitude, frequency,
-                                  attackTime, releaseTime, pan);
-
-        // Connect the parameters to the unit generators.
-        // We register a function to be called whenever the parameter changes
-        // Only needed when the parameter's value is not used directly,
-        // but rather sets some internal state of a unit generator
-        frequency.registerChangeCallback([&](float value) {mOsc.freq(value);});
-        attackTime.registerChangeCallback([&](float value) {mAmpEnv.lengths()[0] = value;});
-        releaseTime.registerChangeCallback([&](float value) {mAmpEnv.lengths()[2] = value;});
-        pan.registerChangeCallback([&](float value) {mPan.pos(value);});
+        createInternalTriggerParameter("amplitude", 0.3, 0.0, 1.0);
+        createInternalTriggerParameter("frequency", 60, 20, 1000);
+        createInternalTriggerParameter("attackTime", 1.0, 0.01, 3.0);
+        createInternalTriggerParameter("releaseTime", 3.0, 0.1, 10.0);
+        createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
     }
 
     //
     virtual void onProcess(AudioIOData& io) override {
+
+        mOsc.freq(getInternalParameterValue("frequency"));
+        mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
+        mAmpEnv.lengths()[2] = getInternalParameterValue("releaseTime");
+        mPan.pos(getInternalParameterValue("pan"));
         while(io()){
-            float s1 = mOsc() * mAmpEnv() * amplitude;
+            float s1 = mOsc() * mAmpEnv() * getInternalParameterValue("amplitude");
             float s2;
             mEnvFollow(s1);
             mPan(s1, s1,s2);
@@ -86,10 +75,12 @@ public:
     }
 
     virtual void onProcess(Graphics &g) {
+        float frequency = getInternalParameterValue("frequency");
+        float amplitude = getInternalParameterValue("amplitude");
         g.pushMatrix();
         g.translate(frequency/200 - 3,  amplitude, -8);
         g.scale(1- amplitude, amplitude, 1);
-        g.color(mEnvFollow.value(), mOsc.freq()/1000, mEnvFollow.value()* 10, 0.4);
+        g.color(mEnvFollow.value(), frequency/1000, mEnvFollow.value()* 10, 0.4);
         g.draw(mMesh);
         g.popMatrix();
     }
@@ -143,21 +134,8 @@ public:
             // Otherwise trigger note for polyphonic synth
             int midiNote = asciiToMIDI(k.key());
             if (midiNote > 0) {
-              // Most configuration will come from the gui, except for the
-              // frequency that will be set according to the key pressed
-              // So we need to set it manually through synthManager.voice()
-              // This voice represents the settings in the gui.
-              synthManager.voice()->frequency = ::pow(2.f, (midiNote - 69.f)/12.f) * 432.f;
-              // Get a free voice from the synth. This is the voice that will be
-              // inserted in the rendering chain
-              SineEnv *voice = synthManager.synth().getVoice<SineEnv>();
-              // Then we configure the free voice.
-              // After setting any values manually, we will set the
-              // parameters from the gui using the configureVoice() function
-              synthManager.configureVoiceFromGui(voice);
-              // Now that the note is configured, we insert it in the synth chain
-              // We set the id to be midiNote to be able to turn it off later
-              synthManager.synth().triggerOn(voice, 0, midiNote);
+              synthManager.voice()->setInternalParameterValue("frequency", ::pow(2.f, (midiNote - 69.f)/12.f) * 432.f);
+              synthManager.triggerOn(midiNote);
             }
         }
     }
@@ -165,7 +143,7 @@ public:
     virtual void onKeyUp(Keyboard const& k) override {
         int midiNote = asciiToMIDI(k.key());
         if (midiNote > 0) {
-            synthManager.synth().triggerOff(midiNote);
+            synthManager.triggerOff(midiNote);
         }
     }
 
