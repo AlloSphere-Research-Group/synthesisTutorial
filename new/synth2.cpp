@@ -22,7 +22,7 @@
 //using namespace gam;
 using namespace al;
 
-// tables
+// tables for oscillator
 gam::ArrayPow2<float>
     tbSaw(2048), tbSqr(2048), tbImp(2048), tbSin(2048), tbPls(2048),
     tb__1(2048), tb__2(2048), tb__3(2048), tb__4(2048);
@@ -35,7 +35,7 @@ public:
     // Unit generators
     gam::Pan<> mPan;
     gam::Osc<> mOsc;
-    gam::Env<3> mAmpEnv;
+    gam::ADSR<> mAmpEnv;
     gam::EnvFollow<> mEnvFollow;  // envelope follower to connect audio output to graphics
 
     // Additional members
@@ -55,8 +55,8 @@ public:
         createInternalTriggerParameter("amplitude", 0.1, 0.0, 1.0);
         createInternalTriggerParameter("frequency", 60, 20, 5000);
         createInternalTriggerParameter("attackTime", 0.1, 0.01, 3.0);
-        createInternalTriggerParameter("sustain", 0.7, 0.0, 1.0);
         createInternalTriggerParameter("releaseTime", 3.0, 0.1, 10.0);
+        createInternalTriggerParameter("sustain", 0.7, 0.0, 1.0);
         createInternalTriggerParameter("curve", 4.0, -10.0, 10.0);
         createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
         createInternalTriggerParameter("table", 0, 0, 8);
@@ -64,13 +64,9 @@ public:
 
     //
     virtual void onProcess(AudioIOData& io) override {
-
-        mOsc.freq(getInternalParameterValue("frequency"));
-        mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
-        mAmpEnv.lengths()[2] = getInternalParameterValue("releaseTime");
-        mPan.pos(getInternalParameterValue("pan"));
+        updateFromParameters();
         while(io()){
-            float s1 = mOsc() * mAmpEnv() * getInternalParameterValue("amplitude");
+            float s1 = 0.1 * mOsc() * mAmpEnv() * getInternalParameterValue("amplitude");
             float s2;
             mEnvFollow(s1);
             mPan(s1, s1,s2);
@@ -87,8 +83,8 @@ public:
         float frequency = getInternalParameterValue("frequency");
         float amplitude = getInternalParameterValue("amplitude");
         g.pushMatrix();
-        g.translate(frequency/200 - 3,  amplitude, -8);
-        g.scale(1- amplitude, amplitude, 1);
+        g.translate(amplitude,  amplitude, -4);
+        g.scale(frequency/200, frequency/400, 1);
         g.color(mEnvFollow.value(), frequency/1000, mEnvFollow.value()* 10, 0.4);
         g.draw(mMesh);
         g.popMatrix();
@@ -96,6 +92,7 @@ public:
 
     virtual void onTriggerOn() override {
         mAmpEnv.reset();
+        updateFromParameters();
         // Map table number to table in memory
         switch (int(getInternalParameterValue("table"))) {
         case 0: mOsc.source(tbSaw); break;
@@ -111,7 +108,17 @@ public:
     }
 
     virtual void onTriggerOff() override {
-        mAmpEnv.release();
+        mAmpEnv.triggerRelease()];
+    }
+
+    void updateFromParameters() {
+        mOsc.freq(getInternalParameterValue("frequency"));
+        mAmpEnv.attack(getInternalParameterValue("attackTime"));
+        mAmpEnv.decay(getInternalParameterValue("attackTime"));
+        mAmpEnv.release(getInternalParameterValue("releaseTime"));
+        mAmpEnv.sustain(getInternalParameterValue("sustain"));
+        mAmpEnv.curve(getInternalParameterValue("curve"));
+        mPan.pos(getInternalParameterValue("pan"));
     }
 };
 
@@ -158,7 +165,7 @@ public:
         ParameterGUI::initialize();
 
         // Play example sequence. Comment this line to start from scratch
-        synthManager.synthSequencer().playSequence("synth1.synthSequence");
+        synthManager.synthSequencer().playSequence("synth2.synthSequence");
         synthManager.synthRecorder().verbose(true);
     }
 
@@ -172,7 +179,9 @@ public:
 
         // Draw GUI
         ParameterGUI::beginDraw();
-        synthManager.drawSynthControlPanel();
+        ParameterGUI::beginPanel(synthManager.name());
+        synthManager.drawSynthWidgets();
+        ParameterGUI::endPanel();
         ParameterGUI::endDraw();
     }
 
@@ -205,7 +214,7 @@ public:
         ParameterGUI::cleanup();
     }
 
-    // GUI manager for SineEnv voices in pSynth
+    // GUI manager for OscEnv voices
     // The name provided determines the name of the directory
     // where the presets and sequences are stored
     SynthGUIManager<OscEnv> synthManager {"synth2"};
@@ -216,26 +225,6 @@ int main(){    // Create app instance
     MyApp app;
 
     app.navControl().active(false); // Disable navigation via keyboard, since we will be using keyboard for note triggering
-
-
-//    SynthSequencer s;
-//    s.add<OscEnv>( 0).set( 4, 262, 0.3, 0.1 , 0.075, 0.7, 4, tbSin, 0.2);
-//    s.add<OscEnv>( 2).freq(220).table(tbSqr);
-//    s.add<OscEnv>( 4).set( 4, 262, 0.3, 2.0 , 0.3  , 0.7, 0, tbSaw,-0.2);
-//    s.add<OscEnv>( 8).set( 4, 262, 0.3, 0.1 , 0.075, 0.7, 4, tbSqr, 0.0);
-//    s.add<OscEnv>(12).set( 4, 262, 0.3, 3.0 , 0.3  , 0.9, 0, tbPls, 0.0);
-//    s.add<OscEnv>(16).set( 4, 262, 0.3, 0.1 , 2    , 0.7, 4, tb__1,-0.6);
-//    s.add<OscEnv>(20).set( 4, 262, 0.3, 0.15, 0.3  , 0.5, 0, tb__2, 0.0);
-//    s.add<OscEnv>(24).set( 4, 26.2, 0.3, 0.1 , 0.075, 0.7, 4, tb__3, 0.6);
-//    s.add<OscEnv>(28).set( 4, 262, 0.3, 0.15, 0.3  , 0.5, 0, tb__4, 0.0);
-//    s.add<OscEnv>(32).set(10, 262, 0.1, 0.1 , 0.075, 0.7, 4, tbSin, 0.2);
-//    s.add<OscEnv>(32).set(10, 262, 0.1, 2   , 0.3  , 0.7, 0, tbSaw,-0.2);
-//    s.add<OscEnv>(32).set(10, 263, 0.1, 0.1 , 0.075, 0.7, 4, tbSqr, 1.0);
-//    s.add<OscEnv>(32).set(10, 261, 0.1, 3   , 0.3  , 0.9, 0, tbPls,-1.0);
-//    s.add<OscEnv>(32).set(10, 262.5,0.1,0.1 , 2    , 0.7, 4, tb__1, 0.0);
-//    s.add<OscEnv>(32).set(10, 262, 0.1, 0.15, 0.3  , 0.5, 0, tb__2, 0.0);
-//    s.add<OscEnv>(32).set(10, 26.4, 0.1, 0.1 , 0.075, 0.7, 4, tb__3, 0.6);
-//    s.add<OscEnv>(32).set(10, 265, 0.1, 0.15, 0.3  , 0.5, 0, tb__4, 0.7);
 
     // Set up audio
     app.initAudio(48000., 256, 2, 0);

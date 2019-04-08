@@ -56,6 +56,7 @@ public:
     //
     virtual void onProcess(AudioIOData& io) override {
 
+        // Parameters will update values once per audio callback
         mOsc.freq(getInternalParameterValue("frequency"));
         mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
         mAmpEnv.lengths()[2] = getInternalParameterValue("releaseTime");
@@ -100,6 +101,15 @@ class MyApp : public App
 {
 public:
 
+    // GUI manager for SineEnv voices
+    // The name provided determines the name of the directory
+    // where the presets and sequences are stored
+    SynthGUIManager<SineEnv> synthManager {"synth1"};
+
+    // This function is called right after the window is created
+    // It provides a grphics context to initialize ParameterGUI
+    // It's also a good place to put things that should
+    // happen once at startup.
     virtual void onCreate() override {
         ParameterGUI::initialize();
 
@@ -108,10 +118,12 @@ public:
         synthManager.synthRecorder().verbose(true);
     }
 
+    // The audio callback function. Called when audio hardware requires data
     virtual void onSound(AudioIOData &io) override {
         synthManager.render(io); // Render audio
     }
 
+    // The graphics callback function.
     virtual void onDraw(Graphics &g) override {
         g.clear();
         synthManager.render(g);
@@ -122,10 +134,11 @@ public:
         ParameterGUI::endDraw();
     }
 
+    // Whenever a key is pressed, this function is called
     virtual void onKeyDown(Keyboard const& k) override {
-      if (ParameterGUI::usingKeyboard()) { //Ignore keys if GUI is using them
-        return;
-      }
+        if (ParameterGUI::usingKeyboard()) { // Ignore keys if GUI is using keyboard
+            return;
+        }
         if (k.shift()) {
             // If shift pressed then keyboard sets preset
             int presetNumber = asciiToIndex(k.key());
@@ -140,6 +153,7 @@ public:
         }
     }
 
+    // Whenever a key is released this function is called
     virtual void onKeyUp(Keyboard const& k) override {
         int midiNote = asciiToMIDI(k.key());
         if (midiNote > 0) {
@@ -150,15 +164,6 @@ public:
     void onExit() override {
         ParameterGUI::cleanup();
     }
-
-    // GUI manager for SineEnv voices in pSynth
-    // The name provided determines the name of the directory
-    // where the presets and sequences are stored
-    SynthGUIManager<SineEnv> synthManager {"synth1"};
-
-    float mAmplitudeSliderValue {0.5};
-    float mPanSliderValue {0.0};
-    float mAttackSliderValue {0.0};
 };
 
 
