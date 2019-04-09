@@ -108,7 +108,7 @@ public:
     }
 
     virtual void onTriggerOff() override {
-        mAmpEnv.triggerRelease()];
+        mAmpEnv.triggerRelease();
     }
 
     void updateFromParameters() {
