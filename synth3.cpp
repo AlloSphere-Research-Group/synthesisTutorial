@@ -31,6 +31,8 @@ public:
     gam::ADSR<> mAmpEnv;
     gam::ADSR<> mVibEnv;
     gam::EnvFollow<> mEnvFollow;
+    
+    float vibValue;
 
     // Additional members
     Mesh mMesh;
@@ -63,7 +65,8 @@ public:
         float vibDepth = getInternalParameterValue("vibDepth");
         while(io()){
             mVib.freq(mVibEnv());
-            mOsc.freq(oscFreq + mVib()*vibDepth*oscFreq);
+            vibValue = mVib();
+            mOsc.freq(oscFreq + vibValue*vibDepth*oscFreq);
 
             float s1 = mOsc() * mAmpEnv() * amp;
             float s2;
@@ -76,7 +79,18 @@ public:
         if(mAmpEnv.done() && (mEnvFollow.value() < 0.001)) free();
     }
 
-
+virtual void onProcess(Graphics &g) {
+        float frequency = getInternalParameterValue("frequency");
+        float amplitude = getInternalParameterValue("amplitude");
+        g.pushMatrix();
+        g.translate(amplitude,  amplitude, -4);
+        float scaling = vibValue + getInternalParameterValue("vibDepth");
+        g.scale(scaling * frequency/200, scaling * frequency/400, scaling* 1);
+        g.color(mEnvFollow.value(), frequency/1000, mEnvFollow.value()* 10, 0.4);
+        g.draw(mMesh);
+        g.popMatrix();
+    }
+    
     virtual void onTriggerOn() override {
 //        mAmpEnv.totalLength(mDur, 1);
         updateFromParameters();
