@@ -42,9 +42,6 @@ public:
     gam::ADSR<> mAmpEnv;
     gam::ADSR<> mModEnv;
     gam::EnvFollow<> mEnvFollow;
-
-//    gam::Sine<> mVib;
-//    gam::Env<2> mVibEnv;
     
     gam::Sine<> car, mod;    // carrier, modulator sine oscillators
 
@@ -55,8 +52,6 @@ public:
 //      mAmpEnv.curve(0); // linear segments
       mAmpEnv.levels(0,1,1,0);
 
-      mModEnv.levels(0,1, 0);
-
       // We have the mesh be a sphere
       addDisc(mMesh, 1.0, 30);
 
@@ -64,7 +59,7 @@ public:
       createInternalTriggerParameter("amplitude", 0.5, 0.0, 1.0);
       createInternalTriggerParameter("attackTime", 0.1, 0.01, 3.0);
       createInternalTriggerParameter("releaseTime", 0.1, 0.1, 10.0);
-      createInternalTriggerParameter("sustain", 0.75, 0.1, 1.0);
+      createInternalTriggerParameter("sustain", 0.75, 0.1, 1.0); // Unused
 
       // FM index
       createInternalTriggerParameter("idx1", 0.01, 0.0, 10.0);
@@ -79,7 +74,8 @@ public:
 
     //
     virtual void onProcess(AudioIOData& io) override {
-        updateFromParameters();
+        float modFreq = getInternalParameterValue("freq") * getInternalParameterValue("modMul");
+        mod.freq(modFreq);
         float carBaseFreq = getInternalParameterValue("freq")*getInternalParameterValue("carMul");
         float modScale = getInternalParameterValue("freq") * getInternalParameterValue("modMul");
         float amp = getInternalParameterValue("amplitude");
@@ -106,10 +102,20 @@ public:
     }
     
     virtual void onTriggerOn() override {
-        updateFromParameters();
+        mModEnv.levels()[0]= getInternalParameterValue("idx1");
+        mModEnv.levels()[1]= getInternalParameterValue("idx2");
+        mModEnv.levels()[2]= getInternalParameterValue("idx2");
+        mModEnv.levels()[3]= getInternalParameterValue("idx3");
 
-        float modFreq = getInternalParameterValue("freq") * getInternalParameterValue("modMul");
-        mod.freq(modFreq);
+
+        mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
+        mModEnv.lengths()[0] = getInternalParameterValue("attackTime");
+
+        mAmpEnv.lengths()[1] = 0.001;
+        mModEnv.lengths()[1] = 0.001;
+
+        mAmpEnv.lengths()[2] = getInternalParameterValue("releaseTime");
+        mModEnv.lengths()[2] = getInternalParameterValue("releaseTime");
 
 //        mModEnv.lengths()[1] = mAmpEnv.lengths()[1];
 
@@ -118,23 +124,7 @@ public:
     }
     virtual void onTriggerOff() override {
         mAmpEnv.triggerRelease();
-    }
-
-    void updateFromParameters() {
-      mModEnv.levels()[0]= getInternalParameterValue("idx1");
-      mModEnv.levels()[1]= getInternalParameterValue("idx2");
-      mModEnv.levels()[2]= getInternalParameterValue("idx2");
-      mModEnv.levels()[3]= getInternalParameterValue("idx3");
-
-      mAmpEnv.levels()[1] = 1.0;
-      mAmpEnv.levels()[2] = 1.0;
-
-      mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
-      mModEnv.lengths()[0] = getInternalParameterValue("attackTime");
-
-      mAmpEnv.lengths()[3] = getInternalParameterValue("releaseTime");
-      mModEnv.lengths()[3] = getInternalParameterValue("releaseTime");
-
+        mModEnv.triggerRelease();
     }
 
 };
@@ -187,6 +177,9 @@ public:
         } else {
             // Otherwise trigger note for polyphonic synth
             int midiNote = asciiToMIDI(k.key());
+            if(k.ctrl()) {
+              midiNote -= 24;
+            }
             if (midiNote > 0) {
               synthManager.voice()->setInternalParameterValue("freq", ::pow(2.f, (midiNote - 69.f)/12.f) * 432.f);
               synthManager.triggerOn(midiNote);
@@ -198,6 +191,8 @@ public:
         int midiNote = asciiToMIDI(k.key());
         if (midiNote > 0) {
             synthManager.triggerOff(midiNote);
+            synthManager.triggerOff(midiNote -24); // Trigger both off for safety
+
         }
     }
 
