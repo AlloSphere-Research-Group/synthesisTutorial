@@ -27,21 +27,21 @@ gam::ArrayPow2<float>
 tbSin(2048), tbSqr(2048), tbPls(2048), tbDin(2048);
 
 
-class OscAM : public SynthVoice {
+class OscTrm : public SynthVoice {
 public:
 
-  gam::Osc<> mAM;
-  gam::ADSR<> mAMEnv;
+  gam::Osc<> mTrm;
+  gam::ADSR<> mTrmEnv;
   gam::Sine<> mOsc;
   gam::ADSR<> mAmpEnv;
-  EnvFollow<> mEnvFollow;
-  Pan<> mPan;
+  gam::EnvFollow<> mEnvFollow;
+  gam::Pan<> mPan;
 
   Mesh mMesh;
 
   void init( ) override {
     mAmpEnv.levels(0,1,1,0);
-    mAMEnv.curve(0);
+    mTrmEnv.curve(0);
 
     // We have the mesh be a sphere
     addDisc(mMesh, 1.0, 30);
@@ -51,11 +51,11 @@ public:
     createInternalTriggerParameter("attackTime", 0.1, 0.01, 3.0);
     createInternalTriggerParameter("releaseTime", 0.1, 0.1, 10.0);
     createInternalTriggerParameter("sustain", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("am1", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("am2", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("amRise", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("amRatio", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("amFunc", 0.0, 0.0, 3.0);
+    createInternalTriggerParameter("trmDepth", 0.5, 0.0, 1.0);
+    createInternalTriggerParameter("trm1", 4, 0.1, 15.0);
+    createInternalTriggerParameter("trm2", 8, 0.1, 15.0);
+    createInternalTriggerParameter("trmRise", 0.5, 0.1, 3.0);
+    createInternalTriggerParameter("table", 0.0, 0.0, 3.0);
     createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
   }
 
@@ -63,17 +63,15 @@ public:
     mOsc.freq(getInternalParameterValue("frequency"));
 
     float amp = getInternalParameterValue("amplitude");
-    float amRatio = getInternalParameterValue("amRatio");
+    float trmDepth = getInternalParameterValue("trmDepth");
     while(io()){
 
-      mAM.freq(mOsc.freq()*amRatio);            // set AM freq according to ratio
-      float amAmt = mAMEnv();                    // AM amount envelope
 
-      float s1 = mOsc();                        // non-modulated signal
-      s1 = s1*(1-amAmt) + (s1*mAM())*amAmt;    // mix modulated and non-modulated
+      mTrm.freq(mTrmEnv());
+      //float trmAmp = mAmp - mTrm()*mTrmDepth; // Replaced with line below
+      float trmAmp = (mTrm()*0.5+0.5)*trmDepth + (1-trmDepth); // Corrected
 
-      s1 *= mAmpEnv() *amp;
-
+      float s1 = mOsc() * mAmpEnv() * trmAmp * amp;
       float s2;
       mEnvFollow(s1);
       mPan(s1, s1,s2);
@@ -93,33 +91,32 @@ public:
     mAmpEnv.levels()[1]= getInternalParameterValue("sustain");
     mAmpEnv.levels()[2]= getInternalParameterValue("sustain");
 
-    mAMEnv.levels(getInternalParameterValue("am1"),
-                  getInternalParameterValue("am2"),
-                  getInternalParameterValue("am2"),
-                  getInternalParameterValue("am1"));
+    mTrmEnv.levels(getInternalParameterValue("trm1"),
+                  getInternalParameterValue("trm2"),
+                   getInternalParameterValue("trm2"),
+                  getInternalParameterValue("trm1"));
 
-    mAMEnv.lengths(getInternalParameterValue("amRise"),
+    mTrmEnv.lengths(getInternalParameterValue("trmRise"),
                    0.001,
-                   getInternalParameterValue("amRise"));
+                   getInternalParameterValue("trmRise"));
 
     mPan.pos(getInternalParameterValue("pan"));
 
     mAmpEnv.reset();
-    mAMEnv.reset();
+    mTrmEnv.reset();
     // Map table number to table in memory
-    switch (int(getInternalParameterValue("amFunc"))) {
-    case 0: mAM.source(tbSin); break;
-    case 1: mAM.source(tbSqr); break;
-    case 2: mAM.source(tbPls); break;
-    case 3: mAM.source(tbDin); break;
+    switch (int(getInternalParameterValue("table"))) {
+    case 0: mTrm.source(tbSin); break;
+    case 1: mTrm.source(tbSqr); break;
+    case 2: mTrm.source(tbPls); break;
+    case 3: mTrm.source(tbDin); break;
     }
   }
 
   virtual void onTriggerOff() override {
       mAmpEnv.triggerRelease();
-      mAMEnv.triggerRelease();
+      mTrmEnv.triggerRelease();
   }
-
 };
 
 
@@ -194,7 +191,7 @@ public:
         ParameterGUI::cleanup();
     }
 
-    SynthGUIManager<OscAM> synthManager {"synth6"};
+    SynthGUIManager<OscTrm> synthManager {"synth5"};
 };
 
 
