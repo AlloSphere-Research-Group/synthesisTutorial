@@ -41,22 +41,26 @@ public:
 
   void init( ) override {
     mAmpEnv.levels(0,1,1,0);
+    mAmpEnv.sustainPoint(1);
+
     mAMEnv.curve(0);
+    mAMEnv.levels(0,1,1,0);
+    mAMEnv.sustainPoint(1);
 
     // We have the mesh be a sphere
     addDisc(mMesh, 1.0, 30);
 
-    createInternalTriggerParameter("frequency", 440, 10, 4000.0);
     createInternalTriggerParameter("amplitude", 0.5, 0.0, 1.0);
+    createInternalTriggerParameter("frequency", 440, 10, 4000.0);
     createInternalTriggerParameter("attackTime", 0.1, 0.01, 3.0);
     createInternalTriggerParameter("releaseTime", 0.1, 0.1, 10.0);
     createInternalTriggerParameter("sustain", 0.75, 0.1, 1.0);
+    createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
     createInternalTriggerParameter("am1", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("am2", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("amRise", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("amRatio", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("amFunc", 0.0, 0.0, 3.0);
-    createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
   }
 
   virtual void onProcess(AudioIOData& io) override {
@@ -86,9 +90,9 @@ public:
 
   virtual void onTriggerOn() override {
 
-    mAmpEnv.lengths()[0] = getInternalParameterValue("attackTime");
+    mAmpEnv.attack(getInternalParameterValue("attackTime"));
     mAmpEnv.lengths()[1] = 0.001;
-    mAmpEnv.lengths()[2] = getInternalParameterValue("releaseTime");
+    mAmpEnv.release(getInternalParameterValue("releaseTime"));
 
     mAmpEnv.levels()[1]= getInternalParameterValue("sustain");
     mAmpEnv.levels()[2]= getInternalParameterValue("sustain");
