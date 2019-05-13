@@ -49,8 +49,11 @@ public:
         // Intialize envelope
         mAmpEnv.curve(0); // make segments lines
         mAmpEnv.levels(0,0.3,0.3,0); // These tables are not normalized, so scale to 0.3
-        mAmpEnv.sustainPoint(2); // Make point 2 sustain until a release is issued
+        mAmpEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
+
         mTrmEnv.curve(0);
+        mTrmEnv.levels(0,1,1,0);
+        mTrmEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
 
         // We have the mesh be a sphere
         addDisc(mMesh, 1.0, 30);
@@ -66,7 +69,7 @@ public:
         createInternalTriggerParameter("trm1", 3.5, 0.2, 20);
         createInternalTriggerParameter("trm2", 5.8, 0.2, 20);
         createInternalTriggerParameter("trmRise", 0.5, 0.1, 2);
-        createInternalTriggerParameter("trmDepth", 0.005, 0.0, 0.3);
+        createInternalTriggerParameter("trmDepth", 0.1, 0.0, 1.0);
     }
 
     //
@@ -108,6 +111,7 @@ virtual void onProcess(Graphics &g) {
 
     virtual void onTriggerOn() override {
         updateFromParameters();
+
         mAmpEnv.reset();
         mTrmEnv.reset();
         
@@ -138,13 +142,15 @@ virtual void onProcess(Graphics &g) {
         mAmpEnv.sustain(getInternalParameterValue("sustain"));
         mAmpEnv.curve(getInternalParameterValue("curve"));
         mPan.pos(getInternalParameterValue("pan"));
+
         mTrmEnv.levels(getInternalParameterValue("trm1"),
                        getInternalParameterValue("trm2"),
                        getInternalParameterValue("trm2"),
                        getInternalParameterValue("trm1"));
-        mTrmEnv.lengths()[0] = getInternalParameterValue("trmRise");
-        mTrmEnv.lengths()[1] = getInternalParameterValue("trmRise");
-        mTrmEnv.lengths()[3] = getInternalParameterValue("trmRise");
+
+        mTrmEnv.attack(getInternalParameterValue("trmRise"));
+        mTrmEnv.decay(getInternalParameterValue("trmRise"));
+        mTrmEnv.release(getInternalParameterValue("trmRise"));
     }
 };
 
