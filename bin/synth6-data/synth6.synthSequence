@@ -1,0 +1,8 @@
+@ 0 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.2    0.8    0.5    1.4870    0 
+@ 5 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.0    1.0    0.0    2.0001    0 
+@ 10 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.2    0.8    1.0    2.0001    2 
+@ 15 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.2    0.8    1.0    0.20001    3 
+
+# OscAM amplitude frequency attackTime releaseTime sustain pan amFunc am1 am2 amRise amRatio  
+#  amplitude frequency attackTime releaseTime sustain pan am1 amFunc am2 amRise amRatio 
+table trm1 trm2 trmRise trmDepth

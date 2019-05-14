@@ -49,11 +49,11 @@ public:
         // Intialize envelope
         mAmpEnv.curve(0); // make segments lines
         mAmpEnv.levels(0,0.3,0.3,0); // These tables are not normalized, so scale to 0.3
-        mAmpEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
+//        mAmpEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
 
         mTrmEnv.curve(0);
         mTrmEnv.levels(0,1,1,0);
-        mTrmEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
+//        mTrmEnv.sustainPoint(1); // Make point 2 sustain until a release is issued
 
         // We have the mesh be a sphere
         addDisc(mMesh, 1.0, 30);

@@ -41,11 +41,11 @@ public:
 
   void init( ) override {
     mAmpEnv.levels(0,1,1,0);
-    mAmpEnv.sustainPoint(1);
+//    mAmpEnv.sustainPoint(1);
 
     mAMEnv.curve(0);
     mAMEnv.levels(0,1,1,0);
-    mAMEnv.sustainPoint(1);
+//    mAMEnv.sustainPoint(1);
 
     // We have the mesh be a sphere
     addDisc(mMesh, 1.0, 30);
@@ -56,11 +56,11 @@ public:
     createInternalTriggerParameter("releaseTime", 0.1, 0.1, 10.0);
     createInternalTriggerParameter("sustain", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
+    createInternalTriggerParameter("amFunc", 0.0, 0.0, 3.0);
     createInternalTriggerParameter("am1", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("am2", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("amRise", 0.75, 0.1, 1.0);
     createInternalTriggerParameter("amRatio", 0.75, 0.1, 1.0);
-    createInternalTriggerParameter("amFunc", 0.0, 0.0, 3.0);
   }
 
   virtual void onProcess(AudioIOData& io) override {
@@ -148,8 +148,8 @@ public:
     virtual void onCreate() override {
         ParameterGUI::initialize();
 
-        // Play example sequence. Comment this line to start from scratch
-//        synthManager.synthSequencer().playSequence("synth6.synthSequence");
+        // Play example sequence. Comment this line to start from scratch (the extensions .synthSequence can be left out)
+        synthManager.synthSequencer().playSequence("synth6");
         synthManager.synthRecorder().verbose(true);
     }
 
