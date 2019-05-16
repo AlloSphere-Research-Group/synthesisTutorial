@@ -1,0 +1,12 @@
+@ 0 3 FM 262 0.5 0.1 0.1 0.75  0.01 7  5  1 1.0007  1
+@ 5 3 FM 220 0.5 0.1 0.1 0.75 0.01 7 5 1 1.0007 0
+
+> 8
+@ 0 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.2    0.8    0.5    1.4870    0 
+@ 5 4.5  OscAM    0.5    262    0.1    0.08    0.8    0    0.0    1.0    0.0    2.0001    0 
+
+# OscAM amplitude frequency attackTime releaseTime sustain pan amFunc am1 am2 amRise amRatio  
+#  amplitude frequency attackTime releaseTime sustain pan am1 amFunc am2 amRise amRatio 
+table trm1 trm2 trmRise trmDepth
+# FM freq amplitude attackTime releaseTime sustain idx1 idx2 idx3 carMul modMul pan 
+#  freq amplitude attackTime releaseTime sustain idx1 idx2 idx3 carMul modMul pan
