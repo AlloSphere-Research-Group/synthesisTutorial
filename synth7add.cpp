@@ -372,7 +372,7 @@ public:
     // GUI manager for SineEnv voices
     // The name provided determines the name of the directory
     // where the presets and sequences are stored
-    SynthGUIManager<AddSyn> synthManager {"synth7new"};
+    SynthGUIManager<AddSyn> synthManager {"synth7"};
 
     // This function is called right after the window is created
     // It provides a grphics context to initialize ParameterGUI
@@ -382,7 +382,7 @@ public:
         ParameterGUI::initialize();
 
         // Play example sequence. Comment this line to start from scratch
-        synthManager.synthSequencer().playSequence("synth7new.synthSequence");
+        synthManager.synthSequencer().playSequence("synth7.synthSequence");
         synthManager.synthRecorder().verbose(true);
     }
 
