@@ -38,10 +38,6 @@ public:
   // Additional members
   Mesh mMesh;
 
-  AddSyn()
-  {
-  }
-
   virtual void init() {
 
     // Intialize envelopes
@@ -86,27 +82,6 @@ public:
     createInternalTriggerParameter("freqUp4", 9.0, 0.1, 10);
     createInternalTriggerParameter("pan", 0.0, -1.0, 1.0);
   }
-
-
-  //    AddSyn& freq(float v1, float v2) {
-  //        dur(v1);
-  //        freq(v2);
-  //        return *this;
-  //    }
-
-  //    AddSyn& amp(float v){ mAmp=v; return *this; }
-  //    AddSyn& ampStri(float v){ mAmpStri=v; return *this; }
-  //    AddSyn& attackStri(float v){ mEnvStri.lengths()[0] = v; return *this; }
-  //    AddSyn& decayStri(float v){ mEnvStri.lengths()[2] = v; return *this; }
-  //    AddSyn& susStri(float v){ mEnvStri.levels()[2]=v; return *this; }
-  //    AddSyn& ampLow(float v){ mAmpLow=v; return *this; }
-  //    AddSyn& attackLow(float v){ mEnvLow.lengths()[0] = v; return *this; }
-  //    AddSyn& decayLow(float v){ mEnvLow.lengths()[2] = v; return *this; }
-  //    AddSyn& susLow(float v){ mEnvLow.levels()[2]=v; return *this; }
-  //    AddSyn& ampUp(float v){ mAmpUp=v; return *this; }
-  //    AddSyn& attackUp(float v){ mEnvUp.lengths()[0] = v; return *this; }
-  //    AddSyn& decayUp(float v){ mEnvUp.lengths()[2] = v; return *this; }
-  //    AddSyn& susUp(float v){ mEnvUp.levels()[2]=v; return *this; }
 
   virtual void onProcess(AudioIOData& io) override {
     // Parameters will update values once per audio callback
@@ -175,49 +150,7 @@ public:
 
 };
 
-//class Chimes : public AddSyn {
-//public:
-//    Chimes(): AddSyn() {
-//        set (6.2,440,0.1,0.5,0.0001,3.8,0.3,0.4,0.0001,6.0,0.99,0.3,0.0001,6.0,0.9,2,3,4.07,0.56,0.92,1.19,1.7,2.75,3.36);
-//    }
-//};
-
-
-//void addOneNote(SynthSequencer &s) {
-//    s.add<Chimes>(0.0).freq(6.2,622.2);
-//}
-
-
-//float harmonicSeriesScale[20];
-
-//void initScaleToHarmonicSeries() {
-//    for (int i=0;i<20;++i) {
-//        harmonicSeriesScale[i] = 100*i;
-//    }
-//}
-//float randomFromHarmonicSeries() {
-//    int index = rnd::uni(0,20);
-//    // std::cout << "index " << index << " is " << myScale[index] << std::endl;
-//    return harmonicSeriesScale[index];
-//}
-
-
-//float halfStepScale[20];
-//float halfStepInterval = 1.05946309; // 2^(1/12)
-//void initScaleTo12TET(float lowest) {
-//    float f = lowest;
-//    for (int i=0;i<20;++i) {
-//        halfStepScale[i] = f;
-//        f *= halfStepInterval;
-//    }
-//}
-
-//float randomFrom12TET() {
-//    int index = rnd::uni(0,20);
-//    // std::cout << "index " << index << " is " << myScale[index] << std::endl;
-//    return halfStepScale[index];
-//}
-
+// Commented out below are things that still need to be ported to this new version
 
 //float myScale[6];
 //void initScaleToMyPitches() {
@@ -233,28 +166,6 @@ public:
 //    int index = rnd::uni(0,6);
 //    std::cout << "index " << index << " is " << myScale[index] << std::endl;
 //    return myScale[index];
-//}
-
-//// Chooses frequencies from a random uniform distribution
-
-//void fillTime(SynthSequencer &s, float from, float to, float minattackStri, float minattackLow, float minattackUp, float maxattackStri, float maxattackLow, float maxattackUp, float minFreq, float maxFreq) {
-//    while (from <= to) {
-//        float nextAtt = rnd::uni((minattackStri+minattackLow+minattackUp),(maxattackStri+maxattackLow+maxattackUp));
-//        s.add<Chimes>(from).attackStri(nextAtt).freq(rnd::uni(minFreq,maxFreq)).amp(0.02);
-//        std::cout << "old from " << from << " plus nextnextAtt " << nextAtt << std::endl;
-//        from += nextAtt;
-//    }
-//}
-
-//void fillTimeWith12TET(SynthSequencer &s, float from, float to, float minattackStri, float minattackLow, float minattackUp, float maxattackStri, float maxattackLow, float maxattackUp) {
-//    while (from <= to) {
-//        float nextAtt = rnd::uni((minattackStri+minattackLow+minattackUp),(maxattackStri+maxattackLow+maxattackUp));
-//        float f = randomFrom12TET();
-//        s.add<Chimes>(from).attackStri(nextAtt).freq(f).amp(0.02);
-//        std::cout << "12 old from " << from << " plus nextAtt " << nextAtt << std::endl;
-//        std::cout << "12 old from " << from << " plus nextAtt " << nextAtt << std::endl;
-//        from += nextAtt;
-//    }
 //}
 
 
@@ -294,21 +205,6 @@ public:
 //    //}
 
 
-//    AudioIO io;
-//    io.init( s.audioCB, &s,256, 44100.);
-//    Domain::master().spu(io.framesPerSecond());
-//    io.start();
-//    printf("\nPress 'enter' or Ctrl-C to quit...\n");
-//    while (io.isRunning()) {
-//      auto c = getchar();
-//      if (c != -1) {
-//        std::cout << c <<std::endl;
-//        io.stop();
-//      }
-//    }
-//    return 0;
-//}
-
 class MyApp : public App
 {
 public:
@@ -318,12 +214,21 @@ public:
   // where the presets and sequences are stored
   SynthGUIManager<AddSyn> synthManager {"synth7"};
 
+  float harmonicSeriesScale[20];
+
+  float halfStepScale[20];
+  float halfStepInterval = 1.05946309; // 2^(1/12)
+
+
   // This function is called right after the window is created
   // It provides a grphics context to initialize ParameterGUI
   // It's also a good place to put things that should
   // happen once at startup.
   virtual void onCreate() override {
     ParameterGUI::initialize();
+
+    initScaleToHarmonicSeries();
+    initScaleTo12TET(110);
 
     // Play example sequence. Comment this line to start from scratch
     synthManager.synthSequencer().playSequence("synth7.synthSequence");
@@ -342,7 +247,19 @@ public:
 
     // Draw GUI
     ParameterGUI::beginDraw();
-    synthManager.drawSynthControlPanel();
+    ParameterGUI::beginPanel("AddSyn");
+
+    if (ImGui::Button("Chimes")) {
+      fillTime(0,4, 0.0001, 0.0001, 0.0001, 0.1, 0.1, 0.1, 200, 500);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Chimes 12TET")) {
+      fillTimeWith12TET(0,4, 0.0001, 0.0001, 0.0001, 0.1, 0.1, 0.1);
+    }
+    ImGui::Separator();
+    synthManager.drawSynthWidgets();
+
+    ParameterGUI::endPanel();
     ParameterGUI::endDraw();
   }
 
@@ -376,6 +293,60 @@ public:
   void onExit() override {
     ParameterGUI::cleanup();
   }
+
+  void initScaleToHarmonicSeries() {
+    for (int i=0;i<20;++i) {
+      harmonicSeriesScale[i] = 100*i;
+    }
+  }
+
+  void initScaleTo12TET(float lowest) {
+    float f = lowest;
+    for (int i=0;i<20;++i) {
+      halfStepScale[i] = f;
+      f *= halfStepInterval;
+    }
+  }
+
+  float randomFrom12TET() {
+    int index = rnd::uni(0,20);
+    // std::cout << "index " << index << " is " << myScale[index] << std::endl;
+    return halfStepScale[index];
+  }
+
+  float randomFromHarmonicSeries() {
+      int index = rnd::uni(0,20);
+      // std::cout << "index " << index << " is " << myScale[index] << std::endl;
+      return harmonicSeriesScale[index];
+  }
+
+  void fillTime(float from, float to, float minattackStri, float minattackLow, float minattackUp, float maxattackStri, float maxattackLow, float maxattackUp, float minFreq, float maxFreq) {
+        while (from <= to) {
+            float nextAtt = rnd::uni((minattackStri+minattackLow+minattackUp),(maxattackStri+maxattackLow+maxattackUp));
+            auto *voice = synthManager.synth().getVoice<AddSyn>();
+            voice->setTriggerParams({0.03,440, 0.5,0.0001,3.8,0.3,   0.4,0.0001,6.0,0.99,  0.3,0.0001,6.0,0.9,  2,3,4.07,0.56,0.92,1.19,1.7,2.75,3.36, 0.0});
+            voice->setInternalParameterValue("attackStr", nextAtt);
+            voice->setInternalParameterValue("freq", rnd::uni(minFreq,maxFreq));
+            synthManager.synthSequencer().addVoiceFromNow(voice, from, 0.2);
+            std::cout << "old from " << from << " plus nextnextAtt " << nextAtt << std::endl;
+            from += nextAtt;
+        }
+  }
+
+  void fillTimeWith12TET(float from, float to, float minattackStri, float minattackLow, float minattackUp, float maxattackStri, float maxattackLow, float maxattackUp) {
+      while (from <= to) {
+
+        float nextAtt = rnd::uni((minattackStri+minattackLow+minattackUp),(maxattackStri+maxattackLow+maxattackUp));
+        auto *voice = synthManager.synth().getVoice<AddSyn>();
+        voice->setTriggerParams({0.03,440, 0.5,0.0001,3.8,0.3,   0.4,0.0001,6.0,0.99,  0.3,0.0001,6.0,0.9,  2,3,4.07,0.56,0.92,1.19,1.7,2.75,3.36, 0.0});
+        voice->setInternalParameterValue("attackStr", nextAtt);
+        voice->setInternalParameterValue("freq", randomFrom12TET());
+        synthManager.synthSequencer().addVoiceFromNow(voice, from, 0.2);
+        std::cout << "12 old from " << from << " plus nextAtt " << nextAtt << std::endl;
+        from += nextAtt;
+      }
+  }
+
 };
 
 
