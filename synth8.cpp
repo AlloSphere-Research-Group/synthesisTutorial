@@ -22,7 +22,7 @@
 //using namespace gam;
 using namespace al;
 
-class synth8 : public SynthVoice {
+class Sub : public SynthVoice {
 public:
 
     // Unit generators
@@ -45,7 +45,7 @@ public:
         mAmpEnv.sustainPoint(2); // Make point 2 sustain until a release is issued
         mCFEnv.curve(0);
         mBWEnv.curve(0);
-
+        mOsc.harmonics(12);
         // We have the mesh be a sphere
         addDisc(mMesh, 1.0, 30);
 
@@ -126,12 +126,13 @@ public:
         mOsc.harmonics(getInternalParameterValue("hmnum"));
         mOsc.ampRatio(getInternalParameterValue("hmamp"));
         mAmpEnv.attack(getInternalParameterValue("attackTime"));
-        mAmpEnv.decay(getInternalParameterValue("attackTime"));
+    //    mAmpEnv.decay(getInternalParameterValue("attackTime"));
         mAmpEnv.release(getInternalParameterValue("releaseTime"));
-        mAmpEnv.sustain(getInternalParameterValue("sustain"));
+        mAmpEnv.levels()[1]=getInternalParameterValue("sustain");
+        mAmpEnv.levels()[2]=getInternalParameterValue("sustain");
+
         mAmpEnv.curve(getInternalParameterValue("curve"));
         mPan.pos(getInternalParameterValue("pan"));
-       // mNoise.seed(getInternalParameterValue("noise"));
         mCFEnv.levels(getInternalParameterValue("cf1"),
                       getInternalParameterValue("cf2"),
                       getInternalParameterValue("cf1"));
@@ -210,7 +211,7 @@ public:
  
     // The name provided determines the name of the directory
     // where the presets and sequences are stored
-    SynthGUIManager<synth8> synthManager {"synth8"};
+    SynthGUIManager<Sub> synthManager {"synth8"};
 };
 
 

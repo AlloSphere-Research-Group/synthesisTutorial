@@ -8,17 +8,3 @@
 @ 41 4 synth8 0.8 120 1 1    0.8 4    0   4  1 100 1000 1 20 20 0.5       .8 10        0        
 #    amplitude frequency attackTime releaseTime sustain curve noise cf1 cf2 cfRise bw1 bw2 bwRise hmnum hmamp pan
 
-
-
-#old sequences from the attic instr
-#dur,freq,.amp,attack,decay,noise,cf1,cf2,cfRise,bw1,bw2,bwRise,hnum,hamp,pan
-# s.add<synth8>( 0).set(5, 220, 0.3, 0.1, 0.1, 0, 50,5000,1.0, 20, 20,0.5, 40,1.0,-1);
-# s.add<synth8>( 6).set(5, 220, 0.3, 0.1, 0.1, 0, 600, 600,1.0, 20,1000,0.5, 10,1.0,1);
-# s.add<synth8>(12).set(5, 0, 0.8, 0.1, 0.1, 1, 262, 262,1.0, 100,5000,0.5, 0,0,.5);
-# s.add<synth8>(18).set(5, 0, 0.8, 0.1, 0.1, 1, 100,1000,1.0, 10, 10,1.0, 0,0,-.8);
-# s.add<synth8>(24).set(5, 120, 0.8, 1.0, 1.0, 0, 50, 50,1.0, 20,2000,0.5, 20,0.5);
-# s.add<synth8>(30).set(5, 0, 0.8, 1.0, 1.0, 1, 100, 100,1.0, 100,5000,0.5, 0,0,0);
-# s.add<synth8>(36).set(5, 120, 0.8, 1.0, 1.0, .8, 100, 100,1.0, 100,5000,0.5, 10,1.0,0);
-# s.add<synth8>(41).set(5, 120, 0.8, 1.0, 1.0, .8, 100, 1000,1.0, 20,20,0.5, 10,1.0,0);
-
-
