@@ -39,7 +39,6 @@ public:
     // Additional members
     Mesh mMesh;
 
-
     virtual void init(){
         mAmp  = 1;
         mDur = 2;
@@ -47,7 +46,6 @@ public:
         mAmpEnv.levels(1,1,0);
         mPanEnv.curve(4);
         env.decay(0.1);
-//      delay(1./27.5, 1./frq) ??? Delay(float maxDelay, float delay)
         delay.maxDelay(1./27.5);
         delay.delay(1./440.0);
 
@@ -59,7 +57,6 @@ public:
         createInternalTriggerParameter("attackTime", 0.001, 0.001, 1.0);
         createInternalTriggerParameter("releaseTime", 3.0, 0.1, 10.0);
         createInternalTriggerParameter("sustain", 0.7, 0.0, 1.0);
-        createInternalTriggerParameter("curve", 4.0, -10.0, 10.0);
         createInternalTriggerParameter("Pan1", 0.0, -1.0, 1.0);
         createInternalTriggerParameter("Pan2", 0.0, -1.0, 1.0);
         createInternalTriggerParameter("PanRise", 0.0, -1.0, 1.0); // range check
