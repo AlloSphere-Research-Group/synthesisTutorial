@@ -1,0 +1,6 @@
+#FM dur freq amplitude attackTime releaseTime sustain idx1 idx2 idx3 carMul modMul vibRate1 vibRate2 vibDepth vibRise pan
+# amplitude frequency attackTime releaseTime sustain curve noise envDur cf1 cf2 cfRise bw1 bw2 bwRise hmnum hmamp pan
+@ 0 4 Sub 0.8 120 1 1  0.8 4  0  4 50 50 1 20 2000 0.5     20 0.5   0   
+@ 5 5 FM 5 100 0.5 0.5 0.1 0.1 2 7 7 1 1.4 3.5 7.5 0.5 0.0075 0 #gong
+
+
